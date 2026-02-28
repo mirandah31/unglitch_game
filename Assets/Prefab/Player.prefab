@@ -182,13 +182,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   moveSpeed: 4
-  jumpForce: 6
-  fallMultiplier: 2.5
+  jumpForce: 7
+  fallMultiplier: 3
   groundCheck: {fileID: 2310945910549958274}
   groundCheckRadius: 0.005
   groundLayer:
     serializedVersion: 2
     m_Bits: 4294967295
+  selectionRange: 8
+  glitchableLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  deathGlitchDuration: 1.5
 --- !u!95 &2887092299862086727
 Animator:
   serializedVersion: 7
