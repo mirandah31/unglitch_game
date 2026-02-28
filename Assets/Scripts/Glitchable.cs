@@ -18,8 +18,16 @@ public abstract class Glitchable : MonoBehaviour
     {
         if (glowRenderer != null)
         {
-            // FIX: Default to hidden, only show when selected
             glowRenderer.enabled = selected;
+            // Optional: add a little pulse when selected
+            if (selected)
+            {
+                glowRenderer.color = Color.cyan; // Bright cyan for visibility
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"{gameObject.name}: No glowRenderer assigned!");
         }
     }
 
@@ -37,12 +45,29 @@ public abstract class Glitchable : MonoBehaviour
         // Auto-assign glow if not set and child "Glow" exists
         if (glowRenderer == null)
         {
-            glowRenderer = transform.Find("Glow")?.GetComponent<SpriteRenderer>();
+            Transform glowChild = transform.Find("Glow");
+            if (glowChild != null)
+            {
+                glowRenderer = glowChild.GetComponent<SpriteRenderer>();
+                if (glowRenderer != null)
+                {
+                    // Ensure glow starts hidden
+                    glowRenderer.enabled = false;
+                    Debug.Log($"{gameObject.name}: Glow found and initialized");
+                }
+                else
+                {
+                    Debug.LogError($"{gameObject.name}: Found 'Glow' child but no SpriteRenderer attached!");
+                }
+            }
+            else
+            {
+                Debug.LogError($"{gameObject.name}: No 'Glow' child found! Please create a child GameObject named 'Glow' with a SpriteRenderer.");
+            }
         }
-        
-        // FIX: Ensure glow starts hidden
-        if (glowRenderer != null)
+        else
         {
+            // If manually assigned, ensure it starts hidden
             glowRenderer.enabled = false;
         }
     }

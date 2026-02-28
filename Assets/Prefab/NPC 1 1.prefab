@@ -206,8 +206,14 @@ MonoBehaviour:
   isGlitched: 1
   canBeUnglitched: 1
   glowRenderer: {fileID: 4600547925830288410}
+  isAnimal: 1
   chaseSpeed: 2.5
   chaseRange: 2
+  pointA: {fileID: 0}
+  pointB: {fileID: 0}
+  normalSpeed: 2
+  glitchedSpeed: 6
+  glitchedReverseDirection: 0
   glitchShakeIntensity: 0.1
   glitchFlickerSpeed: 15
   glitchColor: {r: 0.67058825, g: 0.5254902, b: 0.31764707, a: 1}
