@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    // ─── Existing fields you already have ───
     [Header("Movement")]
     public float moveSpeed = 6f;
     public float jumpForce = 12f;
@@ -11,14 +12,16 @@ public class PlayerController : MonoBehaviour
     public float fallMultiplier = 2.5f;
 
     [Header("Ground Check")]
-    public Transform groundCheck;               // Empty child positioned at/below feet
-    public float groundCheckRadius = 0.25f;     // 0.2–0.35 range usually works best
-    public LayerMask groundLayer;               // MUST be your "Ground" layer only
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.25f;
+    public LayerMask groundLayer;
+
+    // Animator & flip
+    private Animator animator;
+    private SpriteRenderer spriteRenderer;
 
     private Rigidbody2D rb;
     private bool isGrounded;
-
-    // Input
     private PlayerInputActions inputActions;
     private Vector2 moveInput;
     private bool wantsToJump = false;
@@ -26,10 +29,10 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        inputActions = new PlayerInputActions();
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();   // for flipping
 
-        // ─── THIS LINE FIXES SELF-DETECTION ───
-        // Prevents OverlapCircle from hitting the player's own collider
+        inputActions = new PlayerInputActions();
         Physics2D.queriesStartInColliders = false;
     }
 
@@ -47,37 +50,53 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        // Movement
+        // ─── Movement ────────────────────────────────────────────────
         moveInput = inputActions.Player.Move.ReadValue<Vector2>();
+
         rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
 
-        // Ground check
+        // ─── Ground check ────────────────────────────────────────────
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
-        // Faster fall when going down
+        // ─── Faster fall ─────────────────────────────────────────────
         if (rb.linearVelocity.y < 0)
         {
             rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.deltaTime;
         }
 
-        // Jump only if grounded + pressed this frame
+        // ─── Jump ────────────────────────────────────────────────────
         if (wantsToJump)
         {
-            wantsToJump = false;  // Consume input
-
+            wantsToJump = false;
             if (isGrounded)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
                 rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
             }
         }
+
+        // ─── ANIMATION PARAMETERS ────────────────────────────────────
+        bool isMoving = Mathf.Abs(moveInput.x) > 0.01f;           // small deadzone
+
+        animator.SetBool("running", isMoving);
+        animator.SetBool("jumping", !isGrounded);                 // true only when in air
+
+        // ─── FLIP CHARACTER TO FACE MOVEMENT DIRECTION ──────────────
+        if (moveInput.x > 0.01f)
+        {
+            spriteRenderer.flipX = false;     // face right
+        }
+        else if (moveInput.x < -0.01f)
+        {
+            spriteRenderer.flipX = true;      // face left
+        }
+        // when not moving → keep last direction (no change)
     }
 
-    // Debug: Green circle = grounded (can jump), Red = air (no jump)
+    // Debug ground check
     private void OnDrawGizmosSelected()
     {
         if (groundCheck == null) return;
-
         Gizmos.color = isGrounded ? Color.green : Color.red;
         Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
