@@ -9,6 +9,11 @@ public class EndPortal : MonoBehaviour
     {
         if (collision.CompareTag("Player"))
         {
+            // Mark game as completed before loading next level
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SetGameCompleted(true);
+            }
             SceneManager.LoadScene(Level2);
         }
     }

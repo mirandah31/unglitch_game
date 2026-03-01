@@ -6,7 +6,7 @@ public abstract class Glitchable : MonoBehaviour
     public bool canBeUnglitched = true;
 
     [SerializeField]
-    protected SpriteRenderer glowRenderer;   // the child glow object
+    protected SpriteRenderer glowRenderer;
 
     public virtual void SetGlitched(bool glitched)
     {
@@ -19,15 +19,7 @@ public abstract class Glitchable : MonoBehaviour
         if (glowRenderer != null)
         {
             glowRenderer.enabled = selected;
-            // Optional: add a little pulse when selected
-            if (selected)
-            {
-                glowRenderer.color = Color.cyan; // Bright cyan for visibility
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"{gameObject.name}: No glowRenderer assigned!");
+            Debug.Log($"{gameObject.name} glow set to: {selected}"); // Watch this in console
         }
     }
 
@@ -42,7 +34,6 @@ public abstract class Glitchable : MonoBehaviour
 
     protected virtual void Start()
     {
-        // Auto-assign glow if not set and child "Glow" exists
         if (glowRenderer == null)
         {
             Transform glowChild = transform.Find("Glow");
@@ -51,24 +42,25 @@ public abstract class Glitchable : MonoBehaviour
                 glowRenderer = glowChild.GetComponent<SpriteRenderer>();
                 if (glowRenderer != null)
                 {
-                    // Ensure glow starts hidden
+                    // CRITICAL: Start disabled
                     glowRenderer.enabled = false;
-                    Debug.Log($"{gameObject.name}: Glow found and initialized");
+                    Debug.Log($"{gameObject.name}: Glow found and disabled by default");
                 }
                 else
                 {
-                    Debug.LogError($"{gameObject.name}: Found 'Glow' child but no SpriteRenderer attached!");
+                    Debug.LogError($"{gameObject.name}: Glow child has no SpriteRenderer!");
                 }
             }
             else
             {
-                Debug.LogError($"{gameObject.name}: No 'Glow' child found! Please create a child GameObject named 'Glow' with a SpriteRenderer.");
+                Debug.LogError($"{gameObject.name}: No child named 'Glow' found!");
             }
         }
         else
         {
-            // If manually assigned, ensure it starts hidden
+            // If manually assigned, ensure it starts disabled
             glowRenderer.enabled = false;
+            Debug.Log($"{gameObject.name}: Glow manually assigned and disabled");
         }
     }
 }
