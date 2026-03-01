@@ -1,16 +1,15 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EndPortal : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public string Level2;
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        
+        if (collision.CompareTag("Player"))
+        {
+            SceneManager.LoadScene(Level2);
+        }
     }
 }
